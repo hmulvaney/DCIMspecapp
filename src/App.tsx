@@ -1,35 +1,78 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import './App.css';
+import type { Asset, LifecycleStage } from './types/asset';
+import { mockAssets, lifecycleStages } from './data/mockAssets';
+import { LifecycleColumn } from './components/LifecycleColumn';
+import { ScannerInterface } from './components/ScannerInterface';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [assets, setAssets] = useState<Asset[]>(mockAssets);
+  const [showScanner, setShowScanner] = useState(false);
+
+  const handleScan = () => {
+    setShowScanner(true);
+  };
+
+  const handleUpdateAsset = (assetId: string, updates: Partial<Asset>) => {
+    setAssets((prevAssets) =>
+      prevAssets.map((asset) =>
+        asset.id === assetId ? { ...asset, ...updates } : asset
+      )
+    );
+  };
+
+  const handleMoveAsset = (assetId: string, newStage: string) => {
+    handleUpdateAsset(assetId, {
+      lifecycleStage: newStage as LifecycleStage,
+      lastScanned: new Date()
+    });
+  };
+
+  const getAssetsByStage = (stage: LifecycleStage) => {
+    return assets.filter((asset) => asset.lifecycleStage === stage);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="app">
+      <header className="app-header">
+        <div className="header-content">
+          <h1>🏢 DCIM Asset Lifecycle Manager</h1>
+          <p>Datacenter: DC-WEST-01</p>
+        </div>
+        <div className="header-actions">
+          <span className="asset-count-badge">
+            {assets.length} Total Assets
+          </span>
+          <button
+            className="scanner-button"
+            onClick={() => setShowScanner(true)}
+          >
+            📱 Open Scanner
+          </button>
+        </div>
+      </header>
+
+      <div className="lifecycle-board">
+        {lifecycleStages.map((stage) => (
+          <LifecycleColumn
+            key={stage.id}
+            stage={stage}
+            assets={getAssetsByStage(stage.id)}
+            onScan={handleScan}
+            onMoveAsset={handleMoveAsset}
+          />
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+
+      {showScanner && (
+        <ScannerInterface
+          assets={assets}
+          onUpdateAsset={handleUpdateAsset}
+          onClose={() => setShowScanner(false)}
+        />
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
