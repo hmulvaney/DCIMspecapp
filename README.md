@@ -1,73 +1,91 @@
-# React + TypeScript + Vite
+# DCIM Asset Lifecycle Manager
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A prototype datacenter infrastructure management (DCIM) application for tracking hardware assets through their lifecycle. Built for datacenter technicians to manage racking, unracking, and asset lifecycle stages.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Visual Lifecycle Board**: Kanban-style board with 6 lifecycle stages (Receiving → Staging → Racking → Active → Maintenance → Decommissioning)
+- **Asset Scanning**: Simulate barcode/serial number scanning to quickly locate and update assets
+- **Drag & Drop**: Move assets between lifecycle stages with drag-and-drop
+- **Technician-Focused UI**: Mobile-responsive design with large, touch-friendly buttons
+- **Real-time Tracking**: Timestamps and location tracking for all assets
 
-## React Compiler
+## Quick Start
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
+- Node.js 18+ and npm
 
-## Expanding the ESLint configuration
+### Installation
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```bash
+# Clone the repository
+git clone https://github.com/hmulvaney/my-react-app.git
+cd my-react-app
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+# Install dependencies
+npm install
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Start development server
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open http://localhost:5173 in your browser.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Usage
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Scanning Assets
+1. Click "📱 Open Scanner" button in the header
+2. Enter a barcode or serial number:
+   - Try: `SRV-2024-001`, `SRV-2024-002`, `NET-2024-015`
+   - Or any serial number like: `SN123456789`
+3. Select a new lifecycle stage
+4. Click "Update Asset Stage"
+
+### Moving Assets
+- Drag any asset card to a different column to change its lifecycle stage
+- Each asset card shows: type, manufacturer, model, serial number, location, and last scan time
+
+## Project Structure
+
 ```
+src/
+├── components/          # React components
+│   ├── AssetCard.tsx       # Individual asset display
+│   ├── LifecycleColumn.tsx # Lifecycle stage columns
+│   └── ScannerInterface.tsx # Barcode scanning modal
+├── data/
+│   └── mockAssets.ts    # Sample datacenter assets
+├── types/
+│   └── asset.ts         # TypeScript type definitions
+├── App.tsx              # Main application
+└── App.css              # Styles
+```
+
+## Tech Stack
+
+- **React 19** - UI framework
+- **TypeScript 5.9** - Type safety
+- **Vite 7** - Build tool and dev server
+- **CSS** - Responsive styling with Grid/Flexbox
+
+## Available Scripts
+
+```bash
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run preview  # Preview production build
+npm run lint     # Run ESLint
+```
+
+## Mock Data
+
+The app includes 8 sample assets across different lifecycle stages:
+- Dell PowerEdge and HPE ProLiant servers
+- Cisco Nexus and Juniper switches
+- NetApp storage arrays
+
+All assets are configured for datacenter "DC-WEST-01" with rack locations and assignments.
+
+## Development Notes
+
+See [CLAUDE.md](./CLAUDE.md) for detailed architecture and development guidelines.
